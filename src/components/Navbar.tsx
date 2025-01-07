@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router'
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Search, ShoppingCart, User, Menu, X, BookOpen } from 'lucide-react'
+import {Search, ShoppingCart, User, Menu, X, BookOpen, LogInIcon} from 'lucide-react'
 import { ModeToggle } from "@/components/mode-toggle"
 
 export function Navbar() {
@@ -40,6 +40,10 @@ export function Navbar() {
                             <span>Cart</span>
                         </Link>
                         <ModeToggle />
+                        <Link to="/login" className="flex items-center text-foreground hover:text-primary">
+                            <LogInIcon className="h-5 w-5 mr-1"/>
+                            <span>Login</span>
+                        </Link>
                     </div>
                     <div className="md:hidden flex items-center space-x-2">
                         <ModeToggle />
@@ -83,6 +87,12 @@ export function Navbar() {
                             <ShoppingCart className="h-5 w-5 mr-3"/>
                             Cart
                         </Link>
+                        <Link to="/login"
+                              className="flex items-center px-3 py-2 rounded-md text-base font-medium text-foreground hover:text-primary hover:bg-accent transition duration-150 ease-in-out">
+                            <LogInIcon className="h-5 w-5 mr-3"/>
+                            Login
+                        </Link>
+
                     </div>
                 </div>
             )}
