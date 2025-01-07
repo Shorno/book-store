@@ -1,5 +1,5 @@
 import {SidebarInset, SidebarProvider, SidebarTrigger} from "@/components/ui/sidebar.tsx";
-import {AppSidebar} from "@/components/app-sidebar.tsx";
+import {AppSidebar} from "@/components/sidebar/app-sidebar.tsx";
 import {Outlet} from "react-router";
 import {
     Breadcrumb,
