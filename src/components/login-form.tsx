@@ -1,6 +1,6 @@
-import { useState } from "react"
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
+import {useState} from "react"
+import {cn} from "@/lib/utils"
+import {Button} from "@/components/ui/button"
 import {
     Card,
     CardContent,
@@ -8,11 +8,11 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Link } from "react-router"
+import {Input} from "@/components/ui/input"
+import {Link, useLocation, useNavigate} from "react-router"
 import GoogleIcon from "@/icons/googleIcon.tsx"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
+import {zodResolver} from "@hookform/resolvers/zod"
+import {useForm} from "react-hook-form"
 import {
     Form,
     FormControl,
@@ -22,10 +22,18 @@ import {
     FormMessage,
 } from "@/components/ui/form"
 import {LoginFormData, loginSchema} from "@/schem.ts";
+import useAuthStore from "@/store/authStore.ts";
+import toast from "react-hot-toast";
 
 
 export function LoginForm() {
+    const {login, signInWithGoogle} = useAuthStore();
     const [isLoading, setIsLoading] = useState(false)
+
+    const location = useLocation()
+    const from = location.state?.from?.pathname || '/';
+    const navigate = useNavigate();
+
 
     const form = useForm<LoginFormData>({
         resolver: zodResolver(loginSchema),
@@ -35,13 +43,35 @@ export function LoginForm() {
         },
     })
 
-    function onSubmit(values: LoginFormData) {
-        setIsLoading(true)
-        setTimeout(() => {
-            console.log(values)
-            setIsLoading(false)
-        }, 1000)
-
+    const onSubmit = async (values: LoginFormData) => {
+        const {email, password} = values;
+        try {
+            setIsLoading(true);
+            await login(email, password);
+            toast.success('Login successful');
+            navigate(from, {replace: true});
+        } catch (error: any) {
+            switch (error.code) {
+                case 'auth/invalid-credential':
+                    toast.error('Invalid Credentials. Please try again');
+                    break;
+                default:
+                    toast.error('Failed to login: ' + error.message);
+            }
+        } finally {
+            setIsLoading(false);
+        }
+    }
+    const handleGoogleSignIn = async () => {
+        try {
+            await signInWithGoogle();
+            const user = useAuthStore.getState().currentUser?.email;
+            console.log(user)
+            navigate(from, {replace: true});
+            toast.success('Sign in successful');
+        } catch (error: any) {
+            toast.error(`Sign in failed ${error.message}`);
+        }
     }
 
     return (
@@ -56,8 +86,8 @@ export function LoginForm() {
                 <CardContent>
                     <Form {...form}>
                         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                            <Button variant="outline" className="w-full" type="button">
-                                <GoogleIcon />
+                            <Button onClick={handleGoogleSignIn} variant="outline" className="w-full" type="button">
+                                <GoogleIcon/>
                                 Login with Google
                             </Button>
                             <div
@@ -72,20 +102,20 @@ export function LoginForm() {
                                 <FormField
                                     control={form.control}
                                     name="email"
-                                    render={({ field }) => (
+                                    render={({field}) => (
                                         <FormItem>
                                             <FormLabel>Email</FormLabel>
                                             <FormControl>
                                                 <Input placeholder="m@example.com" {...field} />
                                             </FormControl>
-                                            <FormMessage />
+                                            <FormMessage/>
                                         </FormItem>
                                     )}
                                 />
                                 <FormField
                                     control={form.control}
                                     name="password"
-                                    render={({ field }) => (
+                                    render={({field}) => (
                                         <FormItem>
                                             <div className="flex items-center justify-between">
                                                 <FormLabel>Password</FormLabel>
@@ -99,7 +129,7 @@ export function LoginForm() {
                                             <FormControl>
                                                 <Input type="password" {...field} />
                                             </FormControl>
-                                            <FormMessage />
+                                            <FormMessage/>
                                         </FormItem>
                                     )}
                                 />
@@ -117,7 +147,8 @@ export function LoginForm() {
                     </Form>
                 </CardContent>
             </Card>
-            <div className="text-balance text-center text-xs text-muted-foreground [&_a]:underline [&_a]:underline-offset-4 [&_a]:hover:text-primary">
+            <div
+                className="text-balance text-center text-xs text-muted-foreground [&_a]:underline [&_a]:underline-offset-4 [&_a]:hover:text-primary">
                 By clicking continue, you agree to our <a href="#">Terms of Service</a>{" "}
                 and <a href="#">Privacy Policy</a>.
             </div>

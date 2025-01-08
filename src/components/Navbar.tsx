@@ -1,12 +1,16 @@
-import { useState } from 'react'
-import { Link } from 'react-router'
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
+import {useState} from 'react'
+import {Link} from 'react-router'
+import {Input} from "@/components/ui/input"
+import {Button} from "@/components/ui/button"
 import {Search, ShoppingCart, User, Menu, X, BookOpen, LogInIcon} from 'lucide-react'
-import { ModeToggle } from "@/components/mode-toggle"
+import {ModeToggle} from "@/components/mode-toggle"
+import useAuthStore from "@/store/authStore.ts";
+import {UserProfile} from "@/components/UserProfile.tsx";
 
 export function Navbar() {
+    const {currentUser} = useAuthStore()
     const [isMenuOpen, setIsMenuOpen] = useState(false)
+    console.log(currentUser)
 
     return (
         <nav className="bg-background dark:bg-background border-b border-border">
@@ -31,22 +35,23 @@ export function Navbar() {
                         </div>
                     </div>
                     <div className="hidden md:flex items-center space-x-4">
-                        <Link to="/account" className="flex items-center text-foreground hover:text-primary">
-                            <User className="h-5 w-5 mr-1"/>
-                            <span>Account</span>
-                        </Link>
                         <Link to="/cart" className="flex items-center text-foreground hover:text-primary">
                             <ShoppingCart className="h-5 w-5 mr-1"/>
                             <span>Cart</span>
                         </Link>
-                        <ModeToggle />
-                        <Link to="/login" className="flex items-center text-foreground hover:text-primary">
-                            <LogInIcon className="h-5 w-5 mr-1"/>
-                            <span>Login</span>
-                        </Link>
+                        <ModeToggle/>
+                        {
+                            currentUser ?
+                                <UserProfile/>
+                                :
+                                <Link to="/login" className="flex items-center text-foreground hover:text-primary">
+                                    <LogInIcon className="h-5 w-5 mr-1"/>
+                                    <span>Login</span>
+                                </Link>
+                        }
                     </div>
                     <div className="md:hidden flex items-center space-x-2">
-                        <ModeToggle />
+                        <ModeToggle/>
                         <button
                             onClick={() => setIsMenuOpen(!isMenuOpen)}
                             className="inline-flex items-center justify-center p-2 rounded-md text-foreground hover:text-primary focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary"

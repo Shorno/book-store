@@ -1,5 +1,5 @@
-import { cn } from "@/lib/utils.ts"
-import { Button } from "@/components/ui/button.tsx"
+import {cn} from "@/lib/utils.ts"
+import {Button} from "@/components/ui/button.tsx"
 import {
     Card,
     CardContent,
@@ -7,11 +7,11 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card.tsx"
-import { Input } from "@/components/ui/input.tsx"
-import { Link } from "react-router"
+import {Input} from "@/components/ui/input.tsx"
+import {Link, useNavigate} from "react-router"
 import GoogleIcon from "@/icons/googleIcon.tsx"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
+import {zodResolver} from "@hookform/resolvers/zod"
+import {useForm} from "react-hook-form"
 import {
     Form,
     FormControl,
@@ -22,9 +22,13 @@ import {
 } from "@/components/ui/form.tsx"
 import {useState} from "react";
 import {SignupFormData, signupSchema} from "@/schem.ts";
+import useAuthStore from "@/store/authStore.ts";
+import toast from "react-hot-toast";
 
-export default function SignupFrom(){
+export default function SignupFrom() {
+    const {signUp, signInWithGoogle} = useAuthStore()
     const [isLoading, setIsLoading] = useState(false)
+    const navigate = useNavigate();
 
     const form = useForm<SignupFormData>({
         resolver: zodResolver(signupSchema),
@@ -32,15 +36,41 @@ export default function SignupFrom(){
             displayName: "",
             email: "",
             password: "",
+            photoURL: "",
         },
     })
 
-    function onSubmit(values: SignupFormData) {
-        setIsLoading(true)
-        setTimeout(() => {
-            console.log(values)
-            setIsLoading(false)
-        }, 1000)
+    const onSubmit = async (values: SignupFormData) => {
+        const {displayName, email, photoURL, password} = values;
+        try {
+            setIsLoading(true);
+            await signUp(email, password, displayName, photoURL);
+            navigate('/');
+            toast.success('Registration successful');
+        } catch (error: any) {
+            switch (error.code) {
+                case 'auth/email-already-in-use':
+                    toast.error('Email is already in use');
+                    break;
+                default:
+                    toast.error(`Registration failed ${error.message}`);
+                    break;
+            }
+        } finally {
+            setIsLoading(false);
+        }
+    }
+
+    const handleGoogleSignIn = async () => {
+        try {
+            await signInWithGoogle();
+            const user = useAuthStore.getState().currentUser?.email;
+            console.log(user)
+            navigate('/');
+            toast.success('Sign in successful');
+        } catch (error: any) {
+            toast.error(`Sign in failed ${error.message}`);
+        }
     }
     return (
         <>
@@ -55,7 +85,7 @@ export default function SignupFrom(){
                     <CardContent>
                         <Form {...form}>
                             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                                <Button variant="outline" className="w-full" type="button">
+                                <Button onClick={handleGoogleSignIn} variant="outline" className="w-full" type="button">
                                     <GoogleIcon/>
                                     Sign up with Google
                                 </Button>
@@ -96,6 +126,19 @@ export default function SignupFrom(){
                                     />
                                     <FormField
                                         control={form.control}
+                                        name="photoURL"
+                                        render={({field}) => (
+                                            <FormItem>
+                                                <FormLabel>Photo URL</FormLabel>
+                                                <FormControl>
+                                                    <Input type="url" {...field} />
+                                                </FormControl>
+                                                <FormMessage/>
+                                            </FormItem>
+                                        )}
+                                    />
+                                    <FormField
+                                        control={form.control}
                                         name="password"
                                         render={({field}) => (
                                             <FormItem>
@@ -107,6 +150,7 @@ export default function SignupFrom(){
                                             </FormItem>
                                         )}
                                     />
+
                                     <Button type="submit" className="w-full" disabled={isLoading}>
                                         {isLoading ? "Signing up..." : "Sign up"}
                                     </Button>

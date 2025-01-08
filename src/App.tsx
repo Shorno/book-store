@@ -5,6 +5,7 @@ import AdminLayout from "@/layout/AdminLayput.tsx";
 import Dashboard from "@/pages/Dashboard/Dashboard.tsx";
 import LoginPage from "@/pages/Auth/Login.tsx";
 import Signup from "@/pages/Auth/Signup.tsx";
+import {Toaster} from "react-hot-toast";
 
 function App() {
 
@@ -22,7 +23,7 @@ function App() {
                     <Route path={"/signup"} element={<Signup/>}/>
                 </Routes>
             </BrowserRouter>
-
+            <Toaster position={"top-center"}/>
         </>
     )
 }
