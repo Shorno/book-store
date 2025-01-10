@@ -1,5 +1,5 @@
 import {DBUser} from "@/store/authStore.ts";
-import {axiosPublic} from "@/api/axiosConfig.ts";
+import {axiosPublic, axiosSecure} from "@/api/axiosConfig.ts";
 
 
 export const creteUserInDB = async (user: DBUser) => {
@@ -8,21 +8,13 @@ export const creteUserInDB = async (user: DBUser) => {
 }
 
 export const getUsers = async () => {
-    const response = await axiosPublic.get("/users");
+    const response = await axiosSecure.get("/users");
     return response.data;
 }
 
 export const getRoleByEmail = async (email? :string) => {
-    const response = await axiosPublic.get(`/users`,{
+    const response = await axiosSecure.get(`/users`,{
         params : {email}
     });
     return response.data;
 }
-
-// export const getUserRole = async (email: string) => {
-//     if (!email){
-//         console.error("No email provided");
-//     }
-//     const response = await axiosPublic.get(`/users/role/${email}`);
-//     return response.data;
-// }

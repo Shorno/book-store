@@ -65,7 +65,7 @@ export default function SignupFrom() {
         try {
             await signInWithGoogle();
             const user = useAuthStore.getState().currentUser?.email;
-            console.log(user)
+            console.log(user);
             navigate('/');
             toast.success('Sign in successful');
         } catch (error: any) {

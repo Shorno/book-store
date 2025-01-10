@@ -12,6 +12,7 @@ import {
 } from "firebase/auth"
 import {auth} from "../firebase.js"
 import {syncUserToDB} from "@/utils/syncUserDB.ts";
+import {generateJWT} from "@/api/auth.ts";
 
 // import {clearJWTToken} from "@/lib/api.ts";
 
@@ -49,8 +50,7 @@ const useAuthStore = create<AuthStore>((set) => ({
     signUp: async (email: string, password: string, displayName?: string, photoURL?: string) => {
         try {
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-            console.log(userCredential.user);
-            const user = userCredential.user;
+            const user = userCredential?.user;
             if (displayName || photoURL) {
                 await updateProfile(user, {displayName, photoURL});
                 const updatedUser = auth.currentUser;
@@ -59,6 +59,7 @@ const useAuthStore = create<AuthStore>((set) => ({
                 }
             }
             await syncUserToDB(user);
+            await generateJWT(email);
             return userCredential;
         } catch (error) {
             console.error(error);
@@ -71,6 +72,7 @@ const useAuthStore = create<AuthStore>((set) => ({
             const provider = new GoogleAuthProvider();
             const result = await signInWithPopup(auth, provider);
             await syncUserToDB(result.user);
+            await generateJWT(result?.user?.email);
             return result.user;
         } catch (error) {
             console.error(error);
@@ -92,6 +94,7 @@ const useAuthStore = create<AuthStore>((set) => ({
         try {
             const result = await signInWithEmailAndPassword(auth, email, password);
             await syncUserToDB(result.user);
+            await generateJWT(result?.user?.email);
         } catch (error) {
             console.error(error);
             throw error;
