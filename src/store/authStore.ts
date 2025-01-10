@@ -11,7 +11,17 @@ import {
     UserCredential
 } from "firebase/auth"
 import {auth} from "../firebase.js"
+import {syncUserToDB} from "@/utils/syncUserDB.ts";
+
 // import {clearJWTToken} from "@/lib/api.ts";
+
+export interface DBUser {
+    firebaseUID: string;
+    email: string;
+    displayName?: string;
+    photoURL?: string;
+    role: 'user' | 'admin' | 'superAdmin';
+}
 
 type AuthState = {
     currentUser: User | null;
@@ -19,7 +29,7 @@ type AuthState = {
     signUp: (email: string, password: string, displayName: string, photoURL?: string) => Promise<UserCredential>;
     signInWithGoogle: () => Promise<User>;
     logout: () => Promise<void>;
-    login: (email: string, password: string) => Promise<UserCredential>;
+    login: (email: string, password: string) => void;
 
 }
 
@@ -48,7 +58,7 @@ const useAuthStore = create<AuthStore>((set) => ({
                     set({currentUser: updatedUser});
                 }
             }
-            await userCredential.user.reload()
+            await syncUserToDB(user);
             return userCredential;
         } catch (error) {
             console.error(error);
@@ -60,6 +70,7 @@ const useAuthStore = create<AuthStore>((set) => ({
         try {
             const provider = new GoogleAuthProvider();
             const result = await signInWithPopup(auth, provider);
+            await syncUserToDB(result.user);
             return result.user;
         } catch (error) {
             console.error(error);
@@ -79,7 +90,8 @@ const useAuthStore = create<AuthStore>((set) => ({
 
     login: async (email: string, password: string) => {
         try {
-            return await signInWithEmailAndPassword(auth, email, password);
+            const result = await signInWithEmailAndPassword(auth, email, password);
+            await syncUserToDB(result.user);
         } catch (error) {
             console.error(error);
             throw error;

@@ -7,10 +7,11 @@ import {ModeToggle} from "@/components/mode-toggle"
 import useAuthStore from "@/store/authStore.ts";
 import {UserProfile} from "@/components/UserProfile.tsx";
 
+
 export function Navbar() {
     const {currentUser} = useAuthStore()
     const [isMenuOpen, setIsMenuOpen] = useState(false)
-    console.log(currentUser)
+
 
     return (
         <nav className="bg-background dark:bg-background border-b border-border">

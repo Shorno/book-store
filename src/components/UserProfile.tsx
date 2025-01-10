@@ -17,10 +17,15 @@ import {
 import {UserIcon} from "lucide-react"
 import useAuthStore from "@/store/authStore"
 import {Link} from "react-router"
+import {useUserRole} from "@/hooks/useUserRole.tsx";
+import {Role} from "@/utils/constants.ts";
 
 export function UserProfile() {
     const {currentUser, logout} = useAuthStore();
-    const isAdmin = true;
+    const role :Role = useUserRole()
+    console.log(role)
+    const isSuperAdmin = role === "superAdmin";
+    console.log(isSuperAdmin)
 
     return (
         <DropdownMenu>
@@ -54,30 +59,27 @@ export function UserProfile() {
                         <DropdownMenuGroup>
                             <DropdownMenuItem>
                                 Profile
-                                <DropdownMenuShortcut>P</DropdownMenuShortcut>
                             </DropdownMenuItem>
                             <DropdownMenuItem>
                                 Settings
-                                <DropdownMenuShortcut>S</DropdownMenuShortcut>
                             </DropdownMenuItem>
 
                             {
-                                isAdmin ?
+                                isSuperAdmin ?
                                     <DropdownMenuItem>
-                                        Admin Dashboard
-                                        <DropdownMenuShortcut>D</DropdownMenuShortcut>
+                                        <Link to={"/dashboard"}>
+                                            Admin Dashboard
+                                        </Link>
                                     </DropdownMenuItem>
                                     :
                                     <DropdownMenuItem>
                                         My Orders
-                                        <DropdownMenuShortcut>M</DropdownMenuShortcut>
                                     </DropdownMenuItem>
                             }
                         </DropdownMenuGroup>
                         <DropdownMenuSeparator/>
                         <DropdownMenuItem onClick={logout}>
                             Log out
-                            <DropdownMenuShortcut>Q</DropdownMenuShortcut>
                         </DropdownMenuItem>
                     </>
                 ) : (
