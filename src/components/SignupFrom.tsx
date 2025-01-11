@@ -24,7 +24,7 @@ import {useState, useRef, ChangeEvent} from "react"
 import {SignupFormData, signupSchema} from "@/schem.ts"
 import useAuthStore from "@/store/authStore.ts"
 import toast from "react-hot-toast"
-import {useImageUpload} from "@/utils/uploadImage.ts";
+import {useImageUpload} from "@/hooks/useImageUpload.ts";
 
 export default function SignupForm() {
     const {signUp, signInWithGoogle} = useAuthStore()

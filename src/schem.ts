@@ -16,5 +16,16 @@ export const signupSchema = z.object({
 
 })
 
+export const addBookSchema = z.object({
+    title: z.string().min(1, "Title is required"),
+    author: z.string().min(1, "Author is required"),
+    description: z.string().min(10, "Description must be at least 10 characters"),
+    price: z.number().min(0, "Price must be a positive number"),
+    category: z.string().min(1, "Category is required"),
+    quantity: z.number().int().min(0, "Quantity must be a non-negative integer"),
+    image: z.string().url("Invalid image URL"),
+});
+
 export type LoginFormData = z.infer<typeof loginSchema>
 export type SignupFormData = z.infer<typeof signupSchema>
+export type AddBookFormData = z.infer<typeof addBookSchema>
