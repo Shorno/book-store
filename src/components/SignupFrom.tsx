@@ -20,15 +20,20 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form.tsx"
-import {useState} from "react";
-import {SignupFormData, signupSchema} from "@/schem.ts";
-import useAuthStore from "@/store/authStore.ts";
-import toast from "react-hot-toast";
+import {useState, useRef, ChangeEvent} from "react"
+import {SignupFormData, signupSchema} from "@/schem.ts"
+import useAuthStore from "@/store/authStore.ts"
+import toast from "react-hot-toast"
+import {useImageUpload} from "@/utils/uploadImage.ts";
 
-export default function SignupFrom() {
+export default function SignupForm() {
     const {signUp, signInWithGoogle} = useAuthStore()
     const [isLoading, setIsLoading] = useState(false)
-    const navigate = useNavigate();
+    const [selectedFile, setSelectedFile] = useState<File | null>(null)
+    const [previewUrl, setPreviewUrl] = useState<string | null>(null)
+    const fileInputRef = useRef<HTMLInputElement>(null)
+    const navigate = useNavigate()
+    const imageUploadMutation = useImageUpload()
 
     const form = useForm<SignupFormData>({
         resolver: zodResolver(signupSchema),
@@ -38,40 +43,71 @@ export default function SignupFrom() {
             password: "",
             photoURL: "",
         },
+        mode: "onChange"
     })
 
     const onSubmit = async (values: SignupFormData) => {
-        const {displayName, email, photoURL, password} = values;
         try {
             setIsLoading(true);
+            let photoURL = values.photoURL;
+            if (selectedFile) {
+                try {
+                    photoURL = await imageUploadMutation.mutateAsync(selectedFile);
+                } catch (uploadError) {
+                    console.error("Error uploading image:", uploadError);
+                    toast.error("Failed to upload image. Proceeding with signup without profile picture.");
+                }
+            }
+            const {displayName, email, password} = values;
             await signUp(email, password, displayName, photoURL);
             navigate('/');
             toast.success('Registration successful');
         } catch (error: any) {
-            switch (error.code) {
-                case 'auth/email-already-in-use':
-                    toast.error('Email is already in use');
-                    break;
-                default:
-                    toast.error(`Registration failed ${error.message}`);
-                    break;
+            console.error("Signup error:", error);
+            if (error.code === 'auth/email-already-in-use') {
+                toast.error('Email is already in use');
+            } else {
+                toast.error(`Registration failed: ${error.message}`);
             }
         } finally {
             setIsLoading(false);
         }
-    }
+    };
 
     const handleGoogleSignIn = async () => {
         try {
-            await signInWithGoogle();
-            const user = useAuthStore.getState().currentUser?.email;
-            console.log(user);
-            navigate('/');
-            toast.success('Sign in successful');
+            await signInWithGoogle()
+            const user = useAuthStore.getState().currentUser?.email
+            console.log("Google Sign In successful:", user)
+            navigate('/')
+            toast.success('Sign in successful')
         } catch (error: any) {
-            toast.error(`Sign in failed ${error.message}`);
+            console.error("Google Sign In error:", error)
+            toast.error(`Sign in failed: ${error.message}`)
         }
     }
+
+    const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0]
+        if (file) {
+            setSelectedFile(file)
+            const fileUrl = URL.createObjectURL(file)
+            setPreviewUrl(fileUrl)
+
+            try {
+                const uploadedUrl = await imageUploadMutation.mutateAsync(file);
+                form.setValue('photoURL', uploadedUrl, {shouldValidate: true});
+            } catch (error) {
+                console.error("Error uploading image:", error);
+                toast.error("Failed to upload image. Please try again.");
+            }
+        }
+    }
+
+    const handleUploadClick = () => {
+        fileInputRef.current?.click()
+    }
+
     return (
         <>
             <div className={cn("flex flex-col gap-6")}>
@@ -93,9 +129,9 @@ export default function SignupFrom() {
                                     className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center
                 after:border-t after:border-border"
                                 >
-                <span className="relative z-10 bg-background px-2 text-muted-foreground">
-                  Or continue with
-                </span>
+                                    <span className="relative z-10 bg-background px-2 text-muted-foreground">
+                                      Or continue with
+                                    </span>
                                 </div>
                                 <div className="space-y-4">
                                     <FormField
@@ -124,19 +160,42 @@ export default function SignupFrom() {
                                             </FormItem>
                                         )}
                                     />
-                                    <FormField
-                                        control={form.control}
-                                        name="photoURL"
-                                        render={({field}) => (
-                                            <FormItem>
-                                                <FormLabel>Photo URL</FormLabel>
-                                                <FormControl>
-                                                    <Input type="url" {...field} />
-                                                </FormControl>
-                                                <FormMessage/>
-                                            </FormItem>
-                                        )}
-                                    />
+                                    <div>
+                                        <FormLabel>Profile Picture</FormLabel>
+                                        <div className="mt-2 flex items-center gap-4">
+                                            <Button onClick={handleUploadClick} type="button" variant="outline">
+                                                Upload Image
+                                            </Button>
+                                            <input
+                                                type="file"
+                                                ref={fileInputRef}
+                                                onChange={handleFileChange}
+                                                accept="image/*"
+                                                className="hidden"
+                                            />
+                                            {previewUrl && (
+                                                <div className="relative h-16 w-16 overflow-hidden rounded-full">
+                                                    <img
+                                                        src={previewUrl}
+                                                        alt="Profile preview"
+                                                        className="h-full w-full object-cover"
+                                                    />
+                                                </div>
+                                            )}
+                                        </div>
+                                        <FormField
+                                            control={form.control}
+                                            name="photoURL"
+                                            render={({field}) => (
+                                                <FormItem>
+                                                    <FormControl>
+                                                        <Input type="hidden" {...field} />
+                                                    </FormControl>
+                                                    <FormMessage/>
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
                                     <FormField
                                         control={form.control}
                                         name="password"
@@ -151,7 +210,11 @@ export default function SignupFrom() {
                                         )}
                                     />
 
-                                    <Button type="submit" className="w-full" disabled={isLoading}>
+                                    <Button
+                                        type="submit"
+                                        className="w-full"
+                                        disabled={!form.formState.isValid || isLoading}
+                                    >
                                         {isLoading ? "Signing up..." : "Sign up"}
                                     </Button>
                                 </div>
@@ -171,7 +234,7 @@ export default function SignupFrom() {
                     and <Link to="#">Privacy Policy</Link>.
                 </div>
             </div>
-
         </>
     )
 }
+

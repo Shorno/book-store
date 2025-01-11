@@ -48,10 +48,12 @@ const useAuthStore = create<AuthStore>((set) => ({
     setCurrentUser: (user: User | null) => set({currentUser: user}),
 
     signUp: async (email: string, password: string, displayName?: string, photoURL?: string) => {
+        console.log(email, password, displayName, photoURL);
         try {
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             const user = userCredential?.user;
             if (displayName || photoURL) {
+                console.log(photoURL)
                 await updateProfile(user, {displayName, photoURL});
                 const updatedUser = auth.currentUser;
                 if (updatedUser) {

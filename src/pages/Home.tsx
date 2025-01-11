@@ -12,6 +12,7 @@ export default function Home() {
     if (isLoading) return <p>Loading...</p>
     if (isError) return <p>Error fetching users</p>
 
+
     return (
         <>
             {users.data?.map((user: DBUser) => (

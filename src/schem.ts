@@ -12,7 +12,8 @@ export const signupSchema = z.object({
     password: z.string()
         .min(6, 'Password must be at least 6 characters')
         .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
-        .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
+        .regex(/[a-z]/, 'Password must contain at least one lowercase letter'),
+
 })
 
 export type LoginFormData = z.infer<typeof loginSchema>
