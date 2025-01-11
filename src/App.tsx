@@ -16,7 +16,7 @@ function App() {
                     <Route element={<PublicLayout/>}>
                         <Route index element={<Home/>}/>
                     </Route>
-                    <Route path={"/dashboard"} element={<AdminLayout/>}>
+                    <Route path={"/admin"} element={<AdminLayout/>}>
                         <Route index element={<Dashboard/>}/>
                     </Route>
                     <Route path={"/login"} element={<LoginPage/>}/>

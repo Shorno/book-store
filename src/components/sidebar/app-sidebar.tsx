@@ -1,173 +1,172 @@
-import * as React from "react"
 import {
-  AudioWaveform,
-  BookOpen,
-  Bot,
-  Command,
-  Frame,
-  GalleryVerticalEnd,
-  Map,
-  PieChart,
-  Settings2,
-  SquareTerminal,
+    BookIcon,
+    GalleryVerticalEnd,
+    LayoutDashboardIcon, ListOrderedIcon,
+    LogsIcon, LucideListOrdered,
+    Settings2,
+    UsersIcon,
 } from "lucide-react"
 
-import { NavMain } from "@/components/sidebar/nav-main.tsx"
-import { NavProjects } from "@/components/sidebar/nav-projects.tsx"
-import { NavUser } from "@/components/sidebar/nav-user.tsx"
-import { TeamSwitcher } from "@/components/sidebar/team-switcher.tsx"
+import {NavMain} from "@/components/sidebar/nav-main.tsx"
+import {NavUser} from "@/components/sidebar/nav-user.tsx"
+import {TeamSwitcher} from "@/components/sidebar/team-switcher.tsx"
 import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarHeader,
-  SidebarRail,
+    Sidebar,
+    SidebarContent,
+    SidebarFooter,
+    SidebarHeader,
+    SidebarRail,
 } from "@/components/ui/sidebar.tsx"
+import {NavSingle} from "@/components/sidebar/nav-single.tsx";
+import useAuthStore from "@/store/authStore.ts";
+import {Role} from "@/utils/constants.ts";
+import {useUserRole} from "@/hooks/useUserRole.tsx";
 
-// This is sample data.
-const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
-  teams: [
-    {
-      name: "Acme Inc",
-      logo: GalleryVerticalEnd,
-      plan: "Enterprise",
-    },
-    {
-      name: "Acme Corp.",
-      logo: AudioWaveform,
-      plan: "Startup",
-    },
-    {
-      name: "Evil Corp.",
-      logo: Command,
-      plan: "Free",
-    },
-  ],
-  navMain: [
-    {
-      title: "Playground",
-      url: "#",
-      icon: SquareTerminal,
-      isActive: true,
-      items: [
+const superAdminNav = {
+    teams: [
         {
-          title: "History",
-          url: "#",
+            name: "X Book Store",
+            logo: GalleryVerticalEnd,
+            plan: "Enterprise",
+        },
+    ],
+    navSingle: [
+        {
+            name: "Dashboard",
+            url: "",
+            icon: LayoutDashboardIcon,
         },
         {
-          title: "Starred",
-          url: "#",
+            name: "Users",
+            url: "/admin/users",
+            icon: UsersIcon,
         },
         {
-          title: "Settings",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Models",
-      url: "#",
-      icon: Bot,
-      items: [
-        {
-          title: "Genesis",
-          url: "#",
+            name: "Books",
+            url: "/admin/books",
+            icon: BookIcon
         },
         {
-          title: "Explorer",
-          url: "#",
+            name: "Orders",
+            url: "/admin/orders",
+            icon: LucideListOrdered
+        },
+    ],
+    navWithSub: [
+        {
+            title: "Management",
+            url: "#",
+            icon: LogsIcon,
+            isActive: true,
+            items: [
+                {
+                    title: "Applications",
+                    url: "admin/applications",
+                },
+                {
+                    title: "Statistics",
+                    url: "admin/statistics",
+                },
+            ],
         },
         {
-          title: "Quantum",
-          url: "#",
+            title: "Settings",
+            url: "#",
+            icon: Settings2,
+            items: [
+                {
+                    title: "General",
+                    url: "#",
+                },
+
+                {
+                    title: "Billing",
+                    url: "#",
+                },
+            ],
         },
-      ],
-    },
-    {
-      title: "Documentation",
-      url: "#",
-      icon: BookOpen,
-      items: [
-        {
-          title: "Introduction",
-          url: "#",
-        },
-        {
-          title: "Get Started",
-          url: "#",
-        },
-        {
-          title: "Tutorials",
-          url: "#",
-        },
-        {
-          title: "Changelog",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Settings",
-      url: "#",
-      icon: Settings2,
-      items: [
-        {
-          title: "General",
-          url: "#",
-        },
-        {
-          title: "Team",
-          url: "#",
-        },
-        {
-          title: "Billing",
-          url: "#",
-        },
-        {
-          title: "Limits",
-          url: "#",
-        },
-      ],
-    },
-  ],
-  projects: [
-    {
-      name: "Design Engineering",
-      url: "#",
-      icon: Frame,
-    },
-    {
-      name: "Sales & Marketing",
-      url: "#",
-      icon: PieChart,
-    },
-    {
-      name: "Travel",
-      url: "#",
-      icon: Map,
-    },
-  ],
+    ],
 }
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  return (
-    <Sidebar collapsible="icon" {...props}>
-      <SidebarHeader>
-        <TeamSwitcher teams={data.teams} />
-      </SidebarHeader>
-      <SidebarContent>
-        <NavMain items={data.navMain} />
-        <NavProjects projects={data.projects} />
-      </SidebarContent>
-      <SidebarFooter>
-        <NavUser user={data.user} />
-      </SidebarFooter>
-      <SidebarRail />
-    </Sidebar>
-  )
+const adminNav = {
+    teams: [
+        {
+            name: "X Book Store",
+            logo: GalleryVerticalEnd,
+            plan: "Enterprise",
+        },
+    ],
+    navSingle: [
+        {
+            name: "Dashboard",
+            url: "",
+            icon: LayoutDashboardIcon,
+        },
+        {
+            name: "Books",
+            url: "/admin/books",
+            icon: BookIcon
+        },
+        {
+            name: "Orders",
+            url: "/admin/orders",
+            icon: ListOrderedIcon
+        },
+
+    ],
+    navWithSub: [
+        {
+            title: "Management",
+            url: "#",
+            icon: LogsIcon,
+            isActive: true,
+            items: [
+                {
+                    title: "Statistics",
+                    url: "admin/statistics",
+                },
+            ],
+        },
+        {
+            title: "Settings",
+            url: "#",
+            icon: Settings2,
+            items: [
+                {
+                    title: "General",
+                    url: "#",
+                },
+
+                {
+                    title: "Billing",
+                    url: "#",
+                },
+            ],
+        },
+    ],
+}
+
+
+export function AppSidebar({...props}: React.ComponentProps<typeof Sidebar>) {
+    const {currentUser} = useAuthStore()
+    const role: Role = useUserRole()
+    const isSuperAdmin = role === "superAdmin"
+    const links = (isSuperAdmin ? superAdminNav : adminNav)
+
+
+    return (
+        <Sidebar collapsible="icon" {...props}>
+            <SidebarHeader>
+                <TeamSwitcher teams={links.teams}/>
+            </SidebarHeader>
+            <SidebarContent>
+                <NavSingle navSingle={links.navSingle}/>
+                <NavMain items={links.navWithSub}/>
+            </SidebarContent>
+            <SidebarFooter>
+                <NavUser currentUser={currentUser!}/>
+            </SidebarFooter>
+            <SidebarRail/>
+        </Sidebar>
+    )
 }

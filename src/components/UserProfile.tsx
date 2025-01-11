@@ -22,10 +22,8 @@ import {Role} from "@/utils/constants.ts";
 
 export function UserProfile() {
     const {currentUser, logout} = useAuthStore();
-    const role :Role = useUserRole()
-    console.log(role)
-    const isSuperAdmin = role === "superAdmin";
-    console.log(isSuperAdmin)
+    const role: Role = useUserRole()
+    const isUser = role === "user"
 
     return (
         <DropdownMenu>
@@ -65,15 +63,15 @@ export function UserProfile() {
                             </DropdownMenuItem>
 
                             {
-                                isSuperAdmin ?
+                                isUser ?
                                     <DropdownMenuItem>
-                                        <Link to={"/dashboard"}>
-                                            Admin Dashboard
-                                        </Link>
+                                        My Orders
                                     </DropdownMenuItem>
                                     :
                                     <DropdownMenuItem>
-                                        My Orders
+                                        <Link to={"/admin"}>
+                                            Admin Dashboard
+                                        </Link>
                                     </DropdownMenuItem>
                             }
                         </DropdownMenuGroup>
