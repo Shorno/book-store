@@ -45,7 +45,7 @@ export default function ImageUpload({ onImageUpload, maxWidth = 250 }: ImageUplo
                     </Button>
                 </div>
             ) : (
-                <div className="flex items-center justify-center w-full h-full" style={{ maxWidth: `${maxWidth}px` }}>
+                <div className="flex items-center my-2 justify-center w-full h-full" style={{ maxWidth: `${maxWidth}px` }}>
                     <label
                         htmlFor="dropzone-file"
                         className="flex flex-col items-center justify-center w-full h-full border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600"
@@ -59,10 +59,10 @@ export default function ImageUpload({ onImageUpload, maxWidth = 250 }: ImageUplo
                             <div className="flex flex-col items-center justify-center pt-5 pb-6">
                                 <Upload className="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" />
                                 <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
-                                    <span className="font-semibold">Click to upload</span> or drag and drop
+                                    <span className="font-semibold">Click to upload</span> Book Cover
                                 </p>
                                 <p className="text-xs text-gray-500 dark:text-gray-400">
-                                    SVG, PNG, JPG or GIF (MAX. 800x400px)
+                                    SVG, PNG, JPG or GIF
                                 </p>
                             </div>
                         )}

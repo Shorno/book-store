@@ -113,6 +113,7 @@ export default function AddNewBookForm() {
                                             <SelectItem value="science">Science</SelectItem>
                                             <SelectItem value="technology">Technology</SelectItem>
                                             <SelectItem value="business">Business</SelectItem>
+                                            <SelectItem value="fantasy">Fantasy</SelectItem>
                                             <SelectItem value="self-help">Self-Help</SelectItem>
                                         </SelectContent>
                                     </Select>

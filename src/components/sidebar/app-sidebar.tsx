@@ -23,13 +23,11 @@ import {Role} from "@/utils/constants.ts";
 import {useUserRole} from "@/hooks/useUserRole.tsx";
 
 const superAdminNav = {
-    teams: [
-        {
-            name: "X Book Store",
-            logo: GalleryVerticalEnd,
-            plan: "Enterprise",
-        },
-    ],
+    team: {
+        name: "X Book Store",
+        logo: GalleryVerticalEnd,
+        plan: "Enterprise",
+    },
     navSingle: [
         {
             name: "Dashboard",
@@ -93,13 +91,11 @@ const superAdminNav = {
 }
 
 const adminNav = {
-    teams: [
-        {
-            name: "X Book Store",
-            logo: GalleryVerticalEnd,
-            plan: "Enterprise",
-        },
-    ],
+    team: {
+        name: "X Book Store",
+        logo: GalleryVerticalEnd,
+        plan: "Enterprise",
+    },
     navSingle: [
         {
             name: "Dashboard",
@@ -161,7 +157,7 @@ export function AppSidebar({...props}: React.ComponentProps<typeof Sidebar>) {
     return (
         <Sidebar collapsible="icon" {...props}>
             <SidebarHeader>
-                <TeamSwitcher teams={links.teams}/>
+                <TeamSwitcher team={links.team}/>
             </SidebarHeader>
             <SidebarContent>
                 <NavSingle navSingle={links.navSingle}/>

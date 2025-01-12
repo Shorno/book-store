@@ -4,7 +4,7 @@ import {
     ChevronsUpDown,
     CreditCard,
     LogOut,
-    SwitchCamera, UserIcon,
+    UserIcon,
 } from "lucide-react"
 
 import {
@@ -27,9 +27,9 @@ import {
     useSidebar,
 } from "@/components/ui/sidebar.tsx"
 import {User} from "firebase/auth";
+import {ModeToggle} from "@/components/mode-toggle.tsx";
 
-
-export function NavUser({currentUser} : {currentUser: User}) {
+export function NavUser({currentUser}: { currentUser: User }) {
     const {isMobile} = useSidebar()
 
     return (
@@ -61,10 +61,10 @@ export function NavUser({currentUser} : {currentUser: User}) {
                         sideOffset={4}
                     >
                         <DropdownMenuGroup>
-                            <DropdownMenuItem>
-                                <SwitchCamera/>
-                                Switch Account
-                            </DropdownMenuItem>
+                                <div className={"flex items-center gap-1 text-sm"}>
+                                    <ModeToggle/>
+                                    Switch Theme
+                                </div>
                         </DropdownMenuGroup>
                         <DropdownMenuSeparator/>
                         <DropdownMenuGroup>
