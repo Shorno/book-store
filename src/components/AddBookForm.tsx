@@ -19,6 +19,15 @@ import {AddBookFormData, addBookSchema} from "@/schem.ts";
 import {useMutation} from "@tanstack/react-query";
 import {addBook} from "@/api/books.ts";
 
+type ServerError = {
+    response: {
+        data: {
+            status: string;
+            message: string;
+            error: string;
+        }
+    }
+}
 
 export default function AddNewBookForm() {
     const {
@@ -32,24 +41,26 @@ export default function AddNewBookForm() {
     });
 
 
-    const {mutateAsync, isPending} = useMutation({
+    const {mutateAsync, isPending, reset} = useMutation({
         mutationFn: addBook,
         onSuccess: () => {
             toast.success("Book added successfully");
         },
-        onError: (error) => {
-            console.error('Failed to add book:', error);
-            toast.error('Failed to add book');
+        onError: (error: ServerError) => {
+            const errorMessage = error.response?.data?.error || 'Failed to add book';
+            if (errorMessage.includes('E11000')) {
+                if (errorMessage.includes('title_1')) {
+                    toast.error('A book with this title already exists');
+                    return;
+                }
+            }
+            toast.error(errorMessage);
+            reset();
         }
     })
 
     const onSubmit = async (data: AddBookFormData) => {
-        try {
-            const response = await mutateAsync(data);
-            console.log(response)
-        } catch (error: any) {
-            toast.error("Submission failed");
-        }
+        await mutateAsync(data);
     };
 
     return (

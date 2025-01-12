@@ -60,6 +60,10 @@ const superAdminNav = {
             isActive: true,
             items: [
                 {
+                    title: "Add Book",
+                    url: "/admin/add-book",
+                },
+                {
                     title: "Applications",
                     url: "admin/applications",
                 },

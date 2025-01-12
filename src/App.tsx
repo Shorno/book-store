@@ -7,6 +7,7 @@ import LoginPage from "@/pages/Auth/Login.tsx";
 import Signup from "@/pages/Auth/Signup.tsx";
 import {Toaster} from "react-hot-toast";
 import Books from "@/pages/Books.tsx";
+import AddBookPage from "@/pages/AddBookPage.tsx";
 
 function App() {
 
@@ -20,6 +21,7 @@ function App() {
                     <Route path={"/admin"} element={<AdminLayout/>}>
                         <Route index element={<Dashboard/>}/>
                         <Route path={"books"} element={<Books/>}/>
+                        <Route path={"add-book"} element={<AddBookPage/>}/>
                     </Route>
                     <Route path={"/login"} element={<LoginPage/>}/>
                     <Route path={"/signup"} element={<Signup/>}/>
